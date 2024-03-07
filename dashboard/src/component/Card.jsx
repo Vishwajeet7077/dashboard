@@ -1,7 +1,8 @@
 import React from "react";
 import { useLocation } from 'react-router-dom';
+import BubbleGraph from "./circlegraph";
 
-const Card = () => {
+const Card = ({dataArray}) => {
   const location = useLocation();
   const { data } = location.state;
 
@@ -56,6 +57,7 @@ const Card = () => {
           </div>
         </div>
       </div>
+      <BubbleGraph data={dataArray} />
     </div>
   );
 };

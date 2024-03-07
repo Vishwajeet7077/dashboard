@@ -51,6 +51,7 @@ const BubbleGraphBySector = ({ data }) => {
       .attr('cy', d => yScale(d.intensity))
       .attr('r', d => sizeScale(d.relevance))
       .style('fill', 'steelblue')
+      .style('cursor', 'pointer') // Add cursor pointer
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut);
 
@@ -71,7 +72,8 @@ const BubbleGraphBySector = ({ data }) => {
       .attr('x', width / 2)
       .attr('y', height + margin.top + 20)
       .attr('text-anchor', 'middle')
-      .text('Sector');
+      .text('Sector')
+      .attr('class', 'text-gray-800'); // Add text color
 
     // Add y-label
     svg.append('text')
@@ -80,7 +82,8 @@ const BubbleGraphBySector = ({ data }) => {
       .attr('y', -margin.left)
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
-      .text('Intensity');
+      .text('Intensity')
+      .attr('class', 'text-gray-800'); // Add text color
 
     // Tooltip
     const tooltip = d3.select('body').append('div')
@@ -103,7 +106,7 @@ const BubbleGraphBySector = ({ data }) => {
     }
   }, [data]);
 
-  return <svg ref={svgRef}></svg>;
+  return <svg ref={svgRef} className="rounded-lg border border-gray-300"></svg>;
 };
 
 export default BubbleGraphBySector;

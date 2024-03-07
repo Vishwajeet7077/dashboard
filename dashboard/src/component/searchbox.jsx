@@ -1,55 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 
-const SearchBox = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const SearchBox = ({ onSearchSubmit }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get('/api/data/'); // Replace '/api/data/' with your API endpoint
-      setData(response.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  const handleOptionSelect = (option) => {
-    setSelectedOption(option);
-  };
+  const [selectedOption, setSelectedOption] = useState('');
 
   const handleSearchInputChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const handleSearchSubmit = () => {
-    // Here you can filter the data based on the search query and selected option
-    console.log(`Searching for ${searchQuery} in ${selectedOption}`);
-    // Example filtering:
-    const filteredData = data.filter(item => item[selectedOption] === searchQuery);
-    console.log(filteredData);
+  const handleOptionSelect = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    onSearchSubmit(searchQuery, selectedOption);
   };
 
   return (
-    <div>
+    <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-2">
       <input
         type="text"
         placeholder="Enter search query..."
         value={searchQuery}
         onChange={handleSearchInputChange}
+        className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
       />
-      <select onChange={(e) => handleOptionSelect(e.target.value)}>
+      <select
+        onChange={handleOptionSelect}
+        className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+      >
         <option value="">Select option...</option>
         <option value="sector">Sector</option>
         <option value="region">Region</option>
         <option value="title">Title</option>
       </select>
-      <button onClick={handleSearchSubmit}>Search</button>
+      <button
+        onClick={handleSubmit}
+        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+      >
+        Search
+      </button>
     </div>
   );
 };

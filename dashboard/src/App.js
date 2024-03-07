@@ -1,33 +1,47 @@
+// App.js
+
 import React, { useState, useEffect } from 'react';
-import CardList from './component/CardList';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import CardList from './component/CardList';
 import Card from './component/Card';
+import SearchBox from './component/searchbox'; // Correct import path
 
 const App = () => {
   const [dataArray, setDataArray] = useState([]);
+  const [filterValue, setFilterValue] = useState('');
+  const [querySet, setQuerySet] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:8000/')
-      .then(response => response.json())
-      .then(data => {
-        return fetch(data.dashboard);
-      })
-      .then(response => response.json())
-      .then(data => {
-        const dataArray = Array.from(data.entries());
-        setDataArray(dataArray);
-      })
-      .catch(error => console.error('Error fetching data:', error));
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/');
+      const data = await response.json();
+      const dashboardResponse = await fetch(data.dashboard);
+      const dashboardData = await dashboardResponse.json();
+      const dataArray = Array.from(dashboardData.entries());
+      setDataArray(dataArray);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const handleFilterChange = (value, queryset) => {
+    setFilterValue(value);
+    setQuerySet(queryset);
+  };
 
   return (
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<CardList dataArray={dataArray} />} />
+          <Route path="/" element={<CardList dataArray={dataArray} filteredData={filterValue} querySet={querySet} onSearchSubmit={handleFilterChange}/>} />
           <Route path="/details" element={<Card />} />
         </Routes>
       </Router>
+      {/* Pass handleFilterChange as a prop to SearchBox */}
     </div>
   );
 }
