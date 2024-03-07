@@ -1,48 +1,71 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import CardComponent from './CardComponent';
 import BubbleGraph from './bubblegraph';
 import SectorAverageGraph from "./SectorAverageGraph";
 import SearchBox from './searchbox';
 import RegionGraph from './region';
+
 const CardList = ({ dataArray, value, querySet, onSearchSubmit, sectorAverages }) => {
-  // console.log("Type of dataArray :",typeof(dataArray));
-  // console.log("type of dataArray[0] :", typeof(dataArray[0]));
-  // console.log("Values in dataArray[0] :", dataArray[0]);
+  const [filterThreshold, setFilterThreshold] = useState('');
+  const [filterOperator, setFilterOperator] = useState('');
 
-  const filteredData = dataArray.filter(item => {
-    // Check if the item has the 'queryset' attribute and if its value matches the desired 'value'
-    // console.log(typeof(item), item)
-    // console.log(typeof(item[1][querySet]))
-    return typeof item[1][querySet] === 'string' && item[1][querySet].includes(value);
-  });
+  const handleFilter = () => {
+    // Implement filtering logic here
+    const filteredData = dataArray.filter(item => {
+      const itemValue = parseInt(item[1][querySet]);
+      const threshold = parseInt(filterThreshold);
 
-  // console.log(filteredData);
-  const bubbledata = [
-    { region: 'Region 1', intensity: 50, likelihood: 3 },
-    { region: 'Region 2', intensity: 70, likelihood: 4 },
-    { region: 'Region 3', intensity: 40, likelihood: 2 },
-    // Add more data points as needed
-  ];
-  console.log("Bubble Data :", bubbledata)
-  console.log("dataArray :", dataArray)
-  const data = (querySet) ? filteredData : dataArray;
+      if (filterOperator === 'greater') {
+        return itemValue > threshold;
+      } else if (filterOperator === 'less') {
+        return itemValue < threshold;
+      }
+      return true;
+    });
+    return filteredData;
+  };
+
+  useEffect(() => {
+    handleFilter();
+  }, [filterThreshold, filterOperator]);
+
   return (
     <div className="flex flex-col items-center space-y-6 mt-4">
-      <h3 className='text-6xl bold'>Insights into Industrial Sector</h3>
-      <div className='border-4 rounded-3xl' >
+      <h3 className='text-6xl mt-4 bold'>INSIGHTS INTO INDUSTRIAL SECTOR</h3>
+      <div className='border-4 rounded-3xl w-[80%]' >
         <BubbleGraph data={dataArray} />
       </div>
 
       <div className='border-4 rounded-3xl p-5 w-[80%] h-[100%]' >
-        <SectorAverageGraph sectorAverages={sectorAverages} /> {/* Render the SectorAverageGraph component */}
+        <SectorAverageGraph sectorAverages={sectorAverages} />
       </div>
       <div className='border-4 rounded-3xl p-5 w-[80%] h-[100%]' >
         <RegionGraph data={dataArray} />
       </div>
 
       <SearchBox onSearchSubmit={onSearchSubmit} />
+
+      <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-2">
+        <select
+          onChange={(e) => setFilterOperator(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+        >
+          <option value="">Select operator...</option>
+          <option value="greater">Greater than</option>
+          <option value="less">Less than</option>
+        </select>
+
+        <input
+          type="number"
+          placeholder="Threshold value"
+          value={filterThreshold}
+          onChange={(e) => setFilterThreshold(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 m-4">
-        {data.map((item, index) => (
+        {handleFilter().map((item, index) => (
           typeof item === 'object' && (
             <div key={index + 1} className="border border-gray-300 rounded-lg shadow-md">
               <CardComponent data={item} sectorAverages={sectorAverages} />
@@ -51,7 +74,7 @@ const CardList = ({ dataArray, value, querySet, onSearchSubmit, sectorAverages }
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default CardList;
