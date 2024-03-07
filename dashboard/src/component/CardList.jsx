@@ -1,10 +1,11 @@
 import React from 'react';
 import CardComponent from './CardComponent';
 import BubbleGraph from './bubblegraph';
+import SectorAverageGraph from "./SectorAverageGraph"; 
 import SearchBox from './searchbox';
-import { filter } from 'd3';
 
-const CardList = ({ dataArray, filteredData, querySet, onSearchSubmit }) => {
+const CardList = ({ dataArray, filteredData, querySet, onSearchSubmit, sectorAverages }) => {
+
   const filterData = dataArray.filter(([index, item]) => {
     const values = Object.values(item);
     return values.some(value =>
@@ -13,8 +14,13 @@ const CardList = ({ dataArray, filteredData, querySet, onSearchSubmit }) => {
   });
   return (
     <div className="flex flex-col items-center space-y-6 mt-4">
-      <BubbleGraph data={dataArray} />
+      <div  >
+        <BubbleGraph data={dataArray} />
+      </div>
 
+      <div className="w-[500px]">
+        <SectorAverageGraph sectorAverages={sectorAverages} /> {/* Render the SectorAverageGraph component */}
+      </div>
       <div className="w-full md:w-2/3">
         <SearchBox onSearchSubmit={onSearchSubmit} />
       </div>
@@ -23,7 +29,7 @@ const CardList = ({ dataArray, filteredData, querySet, onSearchSubmit }) => {
         {filterData.map((item, index) => (
           typeof item === 'object' && (
             <div key={index + 1} className="border border-gray-300 rounded-lg shadow-md">
-              <CardComponent data={item} />
+              <CardComponent data={item} sectorAverages={sectorAverages} />
             </div>
           )
         ))}
