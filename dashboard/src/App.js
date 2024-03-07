@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CardList from './component/CardList';
 import Card from './component/Card';
-import SearchBox from './component/searchbox';
 
 const App = () => {
   const [dataArray, setDataArray] = useState([]);
@@ -25,7 +24,7 @@ const App = () => {
       // Group data by sector
       const groupedData = {};
       dataArray.forEach(([index, item]) => {
-        const sector = item.sector;
+        const {sector} = item;
         if (!groupedData[sector]) {
           groupedData[sector] = [];
         }
@@ -43,15 +42,12 @@ const App = () => {
       // Set sector averages state
       setSectorAverages(averages);
 
-      // Log or use the sector averages
-      console.log('Sector Averages:', averages);
-
       setDataArray(dataArray);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
-  
+
   const handleFilterChange = (value, queryset) => {
     setFilterValue(value);
     setQuerySet(queryset);
@@ -61,7 +57,10 @@ const App = () => {
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<CardList dataArray={dataArray} filteredData={filterValue} querySet={querySet} onSearchSubmit={handleFilterChange} sectorAverages={sectorAverages}/>} />
+          <Route
+            path="/"
+            element={<CardList dataArray={dataArray} value={filterValue} querySet={querySet} onSearchSubmit={handleFilterChange} sectorAverages={sectorAverages} />}
+          />
           <Route path="/details" element={<Card />} />
         </Routes>
       </Router>
